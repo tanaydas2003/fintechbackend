@@ -1,6 +1,4 @@
 const Transaction = require('../models/Transaction');
-
-// GET /summary - Provide aggregated transaction metrics
 exports.getSummary = async (req, res, next) => {
   try {
     const [summary] = await Transaction.aggregate([
