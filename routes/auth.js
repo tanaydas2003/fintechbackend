@@ -9,17 +9,15 @@ const user = {
   password: "password123"
 };
 
-// Hardcoded JWT secret for testing
-const JWT_SECRET = "vite123";  // Replace with your chosen secret
+const JWT_SECRET = "vite123"; 
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Check if the username and password are correct
   if (username === user.username && password === user.password) {
     const token = jwt.sign(
       { id: user.id, username: user.username },
-      JWT_SECRET,  // Use the hardcoded secret here
+      JWT_SECRET, 
       { expiresIn: '1h' }
     );
     return res.json({ token });
