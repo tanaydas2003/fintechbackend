@@ -1,32 +1,26 @@
 const Transaction = require('../models/Transaction');
 
-// GET /transactions - Fetch paginated transaction data with filters
+// GET /transactions 
 exports.getTransactions = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, dateRange, type, status } = req.query;
     const filter = {};
 
-    // Filter by transaction type
     if (type) filter.type = type;
 
-    // Filter by transaction status
     if (status) filter.status = status;
 
-    // Filter by date range
     if (dateRange) {
       const [start, end] = dateRange.split(',');
       filter.date = { $gte: new Date(start), $lte: new Date(end) };
     }
 
-    // Fetch transactions with pagination
     const transactions = await Transaction.find(filter)
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
-    // Count total transactions for pagination info
     const totalTransactions = await Transaction.countDocuments(filter);
 
-    // Return transactions along with pagination info
     res.json({
       totalTransactions,
       currentPage: Number(page),
@@ -37,8 +31,7 @@ exports.getTransactions = async (req, res, next) => {
     next(err);
   }
 };
-
-// GET /transactions/:id - Retrieve transaction details by ID
+// GET /transactions/:id
 exports.getTransactionById = async (req, res, next) => {
   try {
     const transaction = await Transaction.findById(req.params.id);
@@ -48,30 +41,26 @@ exports.getTransactionById = async (req, res, next) => {
     next(err);
   }
 };
-
-// GET /recent-transactions - Fetch the latest transactions in real-time
+// GET /recent-transactions
 exports.getRecentTransactions = async (req, res, next) => {
   try {
     const transactions = await Transaction.find()
       .sort({ date: -1 })
-      .limit(10); // Example limit, modify as needed
+      .limit(10); 
     res.json(transactions);
   } catch (err) {
     next(err);
   }
 };
 
-// POST /transactions - Create a new transaction
+// POST /transactions 
 exports.createTransaction = async (req, res, next) => {
   try {
     const { amount, date, type, status } = req.body;
 
-    // Validate required fields
     if (!amount || !date || !type || !status) {
       return res.status(400).json({ message: 'All fields are required.' });
     }
-
-    // Create and save new transaction
     const transaction = new Transaction({
       amount,
       date: new Date(date),
@@ -87,7 +76,7 @@ exports.createTransaction = async (req, res, next) => {
 };
 
 
-// GET /transactions/trends - Fetch transaction trends over time
+// GET /transactions/trends 
 exports.getTransactionTrends = async (req, res, next) => {
   try {
     const trends = await Transaction.aggregate([
